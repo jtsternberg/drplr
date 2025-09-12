@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 const path = require('path');
-const { setCredentials } = require('./lib/config');
 const { uploadFile } = require('./lib/commands/upload');
 const { createLink } = require('./lib/commands/link');
+const { handleAuthCommand } = require('./lib/commands/auth');
 const { requireAuthentication, executeCommand } = require('./lib/command-utils');
 
 function showHelp() {
@@ -13,8 +13,8 @@ drplr - Droplr CLI tool for uploading files and creating links
 Usage:
   drplr <file>                           Upload a file
   drplr link <url>                       Create a short link
-  drplr config token <jwt_token>         Set JWT token from browser
-  drplr config login <username> <password>  Set username/password
+  drplr auth token <jwt_token>           Set JWT token from browser
+  drplr auth login <username> <password> Set username/password
   drplr help                             Show this help
 
 Options:
@@ -39,10 +39,10 @@ Authentication:
   # 1. Log into https://d.pr in your browser
   # 2. Open Chrome DevTools > Application > Cookies > d.pr
   # 3. Copy the JWT token value
-  drplr config token eyJhbGciOiJIUzI1NiIs...
+  drplr auth token eyJhbGciOiJIUzI1NiIs...
 
   # Method 2: Use username/password
-  drplr config login your_username your_password
+  drplr auth login your_username your_password
 
 Get help at: https://github.com/Droplr/droplr-js
 `);
@@ -134,44 +134,15 @@ async function main() {
     return;
   }
 
+  if (args[0] === 'auth') {
+    await handleAuthCommand(args.slice(1));
+    return;
+  }
+
+  // Keep 'config' as alias for backwards compatibility
   if (args[0] === 'config') {
-    if (args[1] === 'token') {
-      if (args.length !== 3) {
-        console.error('Usage: drplr config token <jwt_token>');
-        process.exit(1);
-      }
-
-      const token = args[2];
-
-      if (setCredentials('jwt', token)) {
-        console.log('✓ JWT token saved successfully');
-      } else {
-        console.error('✗ Failed to save JWT token');
-        process.exit(1);
-      }
-      return;
-    }
-
-    if (args[1] === 'login') {
-      if (args.length !== 4) {
-        console.error('Usage: drplr config login <username> <password>');
-        process.exit(1);
-      }
-
-      const [, , username, password] = args;
-
-      if (setCredentials('basic', username, password)) {
-        console.log('✓ Login credentials saved successfully');
-      } else {
-        console.error('✗ Failed to save login credentials');
-        process.exit(1);
-      }
-      return;
-    }
-
-    console.error('Usage: drplr config [token|login] ...');
-    console.error('Run "drplr help" for more information');
-    process.exit(1);
+    await handleAuthCommand(args.slice(1));
+    return;
   }
 
   const { filePath, options } = parseArgs(args);
