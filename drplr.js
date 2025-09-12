@@ -1,29 +1,38 @@
 #!/usr/bin/env node
 
 const path = require('path');
-const { getCredentials, setCredentials } = require('./lib/config');
+const { setCredentials } = require('./lib/config');
 const { uploadFile } = require('./lib/upload');
-const { UploadError } = require('./lib/errors');
+const { createLink } = require('./lib/link');
+const { requireAuthentication, executeCommand } = require('./lib/command-utils');
 
 function showHelp() {
   console.log(`
-drplr - Droplr CLI tool for uploading files
+drplr - Droplr CLI tool for uploading files and creating links
 
 Usage:
   drplr <file>                           Upload a file
+  drplr link <url>                       Create a short link
   drplr config token <jwt_token>         Set JWT token from browser
   drplr config login <username> <password>  Set username/password
   drplr help                             Show this help
 
 Options:
-  --private, -p                          Make upload private (default: public)
+  --private, -p                          Make upload/link private (default: public)
   --password <password>                  Set password protection
+  --title <title>                        Set custom title (links only)
   --help, -h                             Show help
 
 Examples:
+  # File uploads
   drplr image.png
   drplr document.pdf --private
   drplr secret.txt --private --password mypass123
+  
+  # Link shortening
+  drplr link https://example.com/very/long/url
+  drplr link https://example.com --title "Custom Title"
+  drplr link https://example.com --private --password secret
 
 Authentication:
   # Method 1: Extract JWT from browser (easiest)
@@ -42,7 +51,8 @@ Get help at: https://github.com/Droplr/droplr-js
 function parseArgs(args) {
   const options = {
     privacy: 'PUBLIC',
-    password: null
+    password: null,
+    title: null
   };
 
   let filePath = null;
@@ -54,6 +64,8 @@ function parseArgs(args) {
       options.privacy = 'PRIVATE';
     } else if (arg === '--password') {
       options.password = args[++i];
+    } else if (arg === '--title') {
+      options.title = args[++i];
     } else if (arg === '--help' || arg === '-h') {
       showHelp();
       process.exit(0);
@@ -65,11 +77,60 @@ function parseArgs(args) {
   return { filePath, options };
 }
 
+async function handleLinkCommand(args) {
+  if (args.length === 0) {
+    console.error('Error: Please specify a URL to shorten');
+    console.error('Usage: drplr link <url> [options]');
+    console.error('Use "drplr help" for more information');
+    process.exit(1);
+  }
+
+  const { filePath: url, options } = parseArgs(args);
+
+  if (!url) {
+    console.error('Error: Please specify a URL to shorten');
+    console.error('Use "drplr help" for usage information');
+    process.exit(1);
+  }
+
+  await executeCommand(async () => {
+    const credentials = requireAuthentication();
+    
+    console.log(`Creating short link for ${url}...`);
+
+    const result = await createLink(url, credentials, options);
+
+    console.log('✓ Link created successfully!');
+
+    if (options.title) {
+      console.log(`Title: ${options.title}`);
+    }
+
+    if (result.privacy === 'PRIVATE') {
+      console.log('Privacy: Private');
+    } else if (options.privacy === 'PRIVATE') {
+      console.log('Privacy: Public (private link not supported or failed)');
+    }
+
+    if (options.password) {
+      console.log('Password protected: Yes');
+    }
+
+    console.log(`Short URL: ${result.shortlink || result.link || result.url}`);
+    console.log(`Original URL: ${url}`);
+  }, 'Link creation');
+}
+
 async function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0 || args[0] === 'help') {
     showHelp();
+    return;
+  }
+
+  if (args[0] === 'link') {
+    await handleLinkCommand(args.slice(1));
     return;
   }
 
@@ -121,20 +182,9 @@ async function main() {
     process.exit(1);
   }
 
-  const credentials = getCredentials();
-
-  if (credentials.type === 'anonymous') {
-    console.error('Error: No authentication configured');
-    console.error('');
-    console.error('Choose one of these methods:');
-    console.error('1. Extract JWT from browser: drplr config token <jwt_token>');
-    console.error('2. Use username/password: drplr config login <username> <password>');
-    console.error('');
-    console.error('See "drplr help" for detailed instructions');
-    process.exit(1);
-  }
-
-  try {
+  await executeCommand(async () => {
+    const credentials = requireAuthentication();
+    
     console.log(`Uploading ${path.basename(filePath)}...`);
 
     const result = await uploadFile(filePath, credentials, options);
@@ -152,24 +202,7 @@ async function main() {
     }
 
     console.log(`URL: ${result.shortlink || result.link || result.url}`);
-
-  } catch (error) {
-    if (error instanceof UploadError) {
-      console.error(error.message);
-      process.exit(1);
-    }
-
-    console.error('✗ Upload failed:', error.message);
-
-    if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-      console.error('');
-      console.error('Try refreshing your authentication:');
-      console.error('- For JWT: Get a fresh token from your browser cookies at d.pr');
-      console.error('- For login: Check your username and password');
-    }
-
-    process.exit(1);
-  }
+  }, 'Upload');
 }
 
 if (require.main === module) {
