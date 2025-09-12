@@ -3,6 +3,7 @@
 const path = require('path');
 const { getCredentials, setCredentials } = require('./lib/config');
 const { uploadFile } = require('./lib/upload');
+const { UploadError } = require('./lib/errors');
 
 function showHelp() {
   console.log(`
@@ -153,6 +154,11 @@ async function main() {
     console.log(`URL: ${result.shortlink || result.link || result.url}`);
 
   } catch (error) {
+    if (error instanceof UploadError) {
+      console.error(error.message);
+      process.exit(1);
+    }
+
     console.error('✗ Upload failed:', error.message);
 
     if (error.message.includes('401') || error.message.includes('Unauthorized')) {
