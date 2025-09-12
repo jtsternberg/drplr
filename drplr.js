@@ -139,8 +139,6 @@ async function main() {
     const result = await uploadFile(filePath, credentials, options);
 
     console.log('✓ Upload successful!');
-    console.log(`URL: ${result.shortlink || result.link || result.url}`);
-    console.log({result});
 
     if (result.privacy === 'PRIVATE') {
       console.log('Privacy: Private');
@@ -151,6 +149,8 @@ async function main() {
     if (options.password) {
       console.log('Password protected: Yes');
     }
+
+    console.log(`URL: ${result.shortlink || result.link || result.url}`);
 
   } catch (error) {
     console.error('✗ Upload failed:', error.message);
