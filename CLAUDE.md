@@ -143,3 +143,4 @@ Successfully created and published `drplr` - a professional CLI tool that:
 
 Published at: https://npmjs.com/package/drplr  
 Source code: https://github.com/jtsternberg/drplr
+- Never `git add .` or `gid add -A`
