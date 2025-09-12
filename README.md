@@ -80,6 +80,3 @@ Choose one of these authentication methods:
 - [Droplr API Docs](https://droplr.github.io/docs/)
 
 
-## TODO
-
-- [ ] Move config file to `~/.config/drplr/config.json`
