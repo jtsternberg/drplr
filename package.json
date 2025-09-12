@@ -1,6 +1,6 @@
 {
   "name": "drplr",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A command-line interface for uploading files to Droplr using their official SDK",
   "main": "drplr.js",
   "bin": {
@@ -10,7 +10,14 @@
     "type": "git",
     "url": "https://github.com/jtsternberg/drplr.git"
   },
-  "keywords": ["droplr", "upload", "cli", "file-sharing", "command-line", "file-upload"],
+  "keywords": [
+    "droplr",
+    "upload",
+    "cli",
+    "file-sharing",
+    "command-line",
+    "file-upload"
+  ],
   "author": "Justin Sternberg <justin@jtsternberg.com> (https://github.com/jtsternberg)",
   "license": "MIT",
   "dependencies": {
