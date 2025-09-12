@@ -23,7 +23,12 @@ npx drplr file.png
 
 Choose one of these authentication methods:
 
-### Method 1: JWT Token (Easiest)
+### Method 1: Username/Password (Easiest)
+```bash
+drplr config login your_username your_password
+```
+
+### Method 2: JWT Token (More Secure)
 1. Log into [d.pr](https://d.pr) in your browser
 2. Open Chrome DevTools > Application > Cookies > d.pr
 3. Copy the JWT token value
@@ -32,10 +37,7 @@ Choose one of these authentication methods:
    drplr config token eyJhbGciOiJIUzI1NiIs...
    ```
 
-### Method 2: Username/Password
-```bash
-drplr config login your_username your_password
-```
+**Note:** JWT tokens may expire and may need to be refreshed periodically.
 
 ## Usage
 
