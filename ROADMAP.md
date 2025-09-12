@@ -10,15 +10,18 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 - Username/password authentication
 - Encrypted credential storage
 - Basic error handling with validation details
+- Link drops (URL shortening)
+- Auth command with config alias for backwards compatibility
+- Global command flags (--porcelain, --debug)
 
 ## Planned Features
 
 ### 1. Non-File Drop Types 📝
 
-#### Link Drops (URL Shortening)
-- `drplr link <url>` - Create shortened links
-- `drplr link <url> --title "Custom Title"` - Link with custom title
-- `drplr link <url> --private --password secret` - Private/protected links
+#### Link Drops (URL Shortening) ✅
+- ✅ `drplr link <url>` - Create shortened links
+- ✅ `drplr link <url> --title "Custom Title"` - Link with custom title
+- ✅ `drplr link <url> --private --password secret` - Private/protected links
 
 #### Note Drops (Text Snippets)
 - `drplr note "Quick text note"` - Create text-based drops
@@ -58,18 +61,6 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 - `drplr board update <board_id> --title "New Name"` - Update board
 - `drplr board delete <board_id>` - Delete board
 - `drplr board watch <board_id>` - Subscribe to board notifications
-
-### 4. Command Flags 🇺🇸
-
-- `drplr --porcelain` - Minimal output, only the URL, Errors sent to stderr instead of stdout.
-- `drplr --debug` - Debug mode with full API responses
-   - Local operation history/audit log when enabled.
-
-### 5. Rename `config` to `auth`
-
-For now, config only handles authentication, so we should create a new command called `auth` that handles authentication.
-
-- Keep `config` for backwards compatibility, but alias it to `auth`. (Eventually it could handle additional configuration options, like permanent flags, see above)
 
 ### 6. Enhanced Upload Features 🚀
 
