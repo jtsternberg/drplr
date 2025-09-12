@@ -2,8 +2,8 @@
 
 const path = require('path');
 const { setCredentials } = require('./lib/config');
-const { uploadFile } = require('./lib/upload');
-const { createLink } = require('./lib/link');
+const { uploadFile } = require('./lib/commands/upload');
+const { createLink } = require('./lib/commands/link');
 const { requireAuthentication, executeCommand } = require('./lib/command-utils');
 
 function showHelp() {
