@@ -5,9 +5,11 @@ const { uploadFile } = require('./lib/commands/upload');
 const { createLink } = require('./lib/commands/link');
 const { handleAuthCommand } = require('./lib/commands/auth');
 const { requireAuthentication, executeCommand } = require('./lib/command-utils');
+const logger = require('./lib/logger');
 
 function showHelp() {
-  console.log(`
+  // Help should go to stderr in porcelain mode since it's not the main output
+  const helpOutput = `
 drplr - Droplr CLI tool for uploading files and creating links
 
 Usage:
@@ -23,6 +25,10 @@ Options:
   --title <title>                        Set custom title (links only)
   --help, -h                             Show help
 
+Global Flags:
+  --porcelain                            Minimal output, only the URL (errors to stderr)
+  --debug                                Debug mode with full API responses
+
 Examples:
   # File uploads
   drplr image.png
@@ -33,6 +39,11 @@ Examples:
   drplr link https://example.com/very/long/url
   drplr link https://example.com --title "Custom Title"
   drplr link https://example.com --private --password secret
+  
+  # Using global flags
+  drplr image.png --porcelain              # Only output the URL
+  drplr image.png --debug                  # Show API response details
+  drplr link https://example.com --porcelain --debug  # Minimal output + debug info
 
 Authentication:
   # Method 1: Extract JWT from browser (easiest)
@@ -45,7 +56,32 @@ Authentication:
   drplr auth login your_username your_password
 
 Get help at: https://github.com/Droplr/droplr-js
-`);
+`;
+  
+  logger.info(helpOutput);
+}
+
+function parseGlobalArgs(args) {
+  const globalOptions = {
+    porcelain: false,
+    debug: false
+  };
+
+  const filteredArgs = [];
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+
+    if (arg === '--porcelain') {
+      globalOptions.porcelain = true;
+    } else if (arg === '--debug') {
+      globalOptions.debug = true;
+    } else {
+      filteredArgs.push(arg);
+    }
+  }
+
+  return { globalOptions, filteredArgs };
 }
 
 function parseArgs(args) {
@@ -77,112 +113,124 @@ function parseArgs(args) {
   return { filePath, options };
 }
 
-async function handleLinkCommand(args) {
+async function handleLinkCommand(args, globalOptions) {
   if (args.length === 0) {
-    console.error('Error: Please specify a URL to shorten');
-    console.error('Usage: drplr link <url> [options]');
-    console.error('Use "drplr help" for more information');
+    logger.error('Error: Please specify a URL to shorten');
+    logger.error('Usage: drplr link <url> [options]');
+    logger.error('Use "drplr help" for more information');
     process.exit(1);
   }
 
   const { filePath: url, options } = parseArgs(args);
 
   if (!url) {
-    console.error('Error: Please specify a URL to shorten');
-    console.error('Use "drplr help" for usage information');
+    logger.error('Error: Please specify a URL to shorten');
+    logger.error('Use "drplr help" for usage information');
     process.exit(1);
   }
 
   await executeCommand(async () => {
     const credentials = requireAuthentication();
     
-    console.log(`Creating short link for ${url}...`);
+    logger.log(`Creating short link for ${url}...`);
 
     const result = await createLink(url, credentials, options);
 
-    console.log('✓ Link created successfully!');
+    if (globalOptions.porcelain) {
+      logger.output(result.shortlink || result.link || result.url);
+    } else {
+      logger.log('✓ Link created successfully!');
 
-    if (options.title) {
-      console.log(`Title: ${options.title}`);
+      if (options.title) {
+        logger.log(`Title: ${options.title}`);
+      }
+
+      if (result.privacy === 'PRIVATE') {
+        logger.log('Privacy: Private');
+      } else if (options.privacy === 'PRIVATE') {
+        logger.log('Privacy: Public (private link not supported or failed)');
+      }
+
+      if (options.password) {
+        logger.log('Password protected: Yes');
+      }
+
+      logger.log(`Short URL: ${result.shortlink || result.link || result.url}`);
+      logger.log(`Original URL: ${url}`);
     }
-
-    if (result.privacy === 'PRIVATE') {
-      console.log('Privacy: Private');
-    } else if (options.privacy === 'PRIVATE') {
-      console.log('Privacy: Public (private link not supported or failed)');
-    }
-
-    if (options.password) {
-      console.log('Password protected: Yes');
-    }
-
-    console.log(`Short URL: ${result.shortlink || result.link || result.url}`);
-    console.log(`Original URL: ${url}`);
   }, 'Link creation');
 }
 
 async function main() {
   const args = process.argv.slice(2);
+  const { globalOptions, filteredArgs } = parseGlobalArgs(args);
+  
+  // Initialize logger with global options
+  logger.initLogger(globalOptions);
 
-  if (args.length === 0 || args[0] === 'help') {
+  if (filteredArgs.length === 0 || filteredArgs[0] === 'help') {
     showHelp();
     return;
   }
 
-  if (args[0] === 'link') {
-    await handleLinkCommand(args.slice(1));
+  if (filteredArgs[0] === 'link') {
+    await handleLinkCommand(filteredArgs.slice(1), globalOptions);
     return;
   }
 
-  if (args[0] === 'auth') {
-    await handleAuthCommand(args.slice(1));
+  if (filteredArgs[0] === 'auth') {
+    await handleAuthCommand(filteredArgs.slice(1));
     return;
   }
 
   // Keep 'config' as alias for backwards compatibility
-  if (args[0] === 'config') {
-    await handleAuthCommand(args.slice(1));
+  if (filteredArgs[0] === 'config') {
+    await handleAuthCommand(filteredArgs.slice(1));
     return;
   }
 
-  const { filePath, options } = parseArgs(args);
+  const { filePath, options } = parseArgs(filteredArgs);
 
   if (!filePath) {
-    console.error('Error: Please specify a file to upload');
-    console.error('Use "drplr help" for usage information');
+    logger.error('Error: Please specify a file to upload');
+    logger.error('Use "drplr help" for usage information');
     process.exit(1);
   }
 
   await executeCommand(async () => {
     const credentials = requireAuthentication();
     
-    console.log(`Uploading ${path.basename(filePath)}...`);
+    logger.log(`Uploading ${path.basename(filePath)}...`);
 
     const result = await uploadFile(filePath, credentials, options);
 
-    console.log('✓ Upload successful!');
+    if (globalOptions.porcelain) {
+      logger.output(result.shortlink || result.link || result.url);
+    } else {
+      logger.log('✓ Upload successful!');
 
-    if (options.title) {
-      console.log(`Title: ${options.title}`);
+      if (options.title) {
+        logger.log(`Title: ${options.title}`);
+      }
+
+      if (result.privacy === 'PRIVATE') {
+        logger.log('Privacy: Private');
+      } else if (options.privacy === 'PRIVATE') {
+        log('Privacy: Public (private upload not supported or failed)');
+      }
+
+      if (options.password) {
+        logger.log('Password protected: Yes');
+      }
+
+      logger.log(`URL: ${result.shortlink || result.link || result.url}`);
     }
-
-    if (result.privacy === 'PRIVATE') {
-      console.log('Privacy: Private');
-    } else if (options.privacy === 'PRIVATE') {
-      console.log('Privacy: Public (private upload not supported or failed)');
-    }
-
-    if (options.password) {
-      console.log('Password protected: Yes');
-    }
-
-    console.log(`URL: ${result.shortlink || result.link || result.url}`);
   }, 'Upload');
 }
 
 if (require.main === module) {
   main().catch(error => {
-    console.error('Unexpected error:', error.message);
+    logger.error('Unexpected error:', error.message);
     process.exit(1);
   });
 }
