@@ -59,22 +59,17 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 - `drplr board delete <board_id>` - Delete board
 - `drplr board watch <board_id>` - Subscribe to board notifications
 
-### 4. Team Management 👥
+### 4. Command Flags 🇺🇸
 
-#### Team Operations
-- `drplr teams` - List available teams
-- `drplr team <team_id>` - Show team details
-- `drplr team create "New Team"` - Create team (admin)
-- `drplr team update <team_id> --name "Updated Name"` - Update team
-- `drplr team delete <team_id>` - Delete team
+- `drplr --porcelain` - Minimal output, only the URL, Errors sent to stderr instead of stdout.
+- `drplr --debug` - Debug mode with full API responses
+   - Local operation history/audit log when enabled.
 
-### 5. User Management 👤
+### 5. Rename `config` to `auth`
 
-#### Account Information
-- `drplr whoami` - Show current user info
-- `drplr user <user_id>` - Get user details (if accessible)
-- `drplr users` - List users (team/admin feature)
-- `drplr tags` - Show user's tags
+For now, config only handles authentication, so we should create a new command called `auth` that handles authentication.
+
+- Keep `config` for backwards compatibility, but alias it to `auth`. (Eventually it could handle additional configuration options, like permanent flags, see above)
 
 ### 6. Enhanced Upload Features 🚀
 
@@ -122,55 +117,13 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 - `drplr quota` - Show storage usage and limits
 - `drplr cleanup` - Remove orphaned/expired drops
 
-#### Logging and Debugging
-- `drplr --verbose` - Detailed operation logging
-- `drplr --debug` - Debug mode with full API responses
-- Local operation history/audit log
-
-### 10. Security and Privacy 🔒
-
-#### Enhanced Security
-- Two-factor authentication support
-- API key rotation helpers
-- Secure credential sharing between devices
-
-#### Privacy Controls
-- Bulk privacy updates: `drplr privacy --all --private`
-- Automatic expiration for sensitive uploads
-- Audit trail for access and modifications
-
-## Implementation Priority
-
-### Phase 1 (Core Enhancements)
-1. Drop listing and management (`list`, `info`, `delete`)
-2. Link and note creation
-3. Basic board support
-4. Enhanced upload options (tagging, batch uploads)
-
-### Phase 2 (Team Features)
-1. Board management
-2. Team operations
-3. User management features
-4. Statistics and analytics
-
-### Phase 3 (Advanced Features)
-1. Multiple profiles and advanced config
-2. Shell integration and completion
-3. Output formats and integrations
-4. Monitoring and maintenance tools
-
-### Phase 4 (Polish)
-1. Enhanced security features
-2. Performance optimizations
-3. Comprehensive testing
-4. Documentation and tutorials
-
 ## Technical Considerations
 
 ### Architecture
 - Maintain modular structure with separate modules for each feature area
 - Extend existing authentication system for all new features
 - Consistent error handling and user experience patterns
+- Keep DRY as much as possible.
 
 ### Dependencies
 - Leverage existing `droplr-api` SDK for all operations
