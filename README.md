@@ -4,19 +4,20 @@ A command-line interface for uploading files to Droplr using their official SDK.
 
 ## Installation
 
-1. Clone or download this repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Make the script executable (if needed):
-   ```bash
-   chmod +x drplr.js
-   ```
-4. Optionally, link it globally:
-   ```bash
-   npm link
-   ```
+```bash
+npm install -g drplr
+```
+then use it like this:
+```bash
+drplr config login your_username your_password
+drplr file.png
+```
+
+_Or_ try it without installing:
+```bash
+npx drplr config login your_username your_password
+npx drplr file.png
+```
 
 ## Authentication Setup
 
@@ -28,34 +29,34 @@ Choose one of these authentication methods:
 3. Copy the JWT token value
 4. Configure the CLI:
    ```bash
-   ./drplr.js config token eyJhbGciOiJIUzI1NiIs...
+   drplr config token eyJhbGciOiJIUzI1NiIs...
    ```
 
 ### Method 2: Username/Password
 ```bash
-./drplr.js config login your_username your_password
+drplr config login your_username your_password
 ```
 
 ## Usage
 
 ### Upload a file
 ```bash
-./drplr.js file.png
+drplr file.png
 ```
 
 ### Upload a private file
 ```bash
-./drplr.js file.png --private
+drplr file.png --private
 ```
 
 ### Upload with password protection
 ```bash
-./drplr.js file.png --private --password mypassword
+drplr file.png --private --password mypassword
 ```
 
 ### Show help
 ```bash
-./drplr.js help
+drplr help
 ```
 
 ## Features
@@ -78,5 +79,36 @@ Choose one of these authentication methods:
 
 - [Droplr JS SDK](https://github.com/Droplr/droplr-js)
 - [Droplr API Docs](https://droplr.github.io/docs/)
+
+## Alternative Installation Methods
+
+### Other package managers
+```bash
+# Yarn
+yarn global add drplr
+
+# pnpm
+pnpm install -g drplr
+```
+
+### Manual install from GitHub
+```bash
+# Clone and set up
+git clone https://github.com/jtsternberg/drplr.git
+cd drplr
+npm install
+
+# Option 1: Create an alias
+echo 'alias drplr="node /path/to/drplr/drplr.js"' >> ~/.bashrc
+source ~/.bashrc
+
+# Option 2: Add to PATH
+export PATH="$PATH:/path/to/drplr"
+```
+
+### Development Installation
+1. Clone this repository
+2. Install dependencies: `npm install`
+3. Link globally: `npm link`
 
 
