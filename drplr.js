@@ -191,6 +191,10 @@ async function main() {
 
     console.log('✓ Upload successful!');
 
+    if (options.title) {
+      console.log(`Title: ${options.title}`);
+    }
+
     if (result.privacy === 'PRIVATE') {
       console.log('Privacy: Private');
     } else if (options.privacy === 'PRIVATE') {
