@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
-const path = require('path');
-const { uploadFile } = require('./lib/commands/upload');
-const { createLink } = require('./lib/commands/link');
-const { createNote, createNoteFromFile } = require('./lib/commands/note');
+const { handleUploadCommand } = require('./lib/commands/upload');
+const { handleLinkCommand } = require('./lib/commands/link');
+const { handleNoteCommand } = require('./lib/commands/note');
 const { handleAuthCommand } = require('./lib/commands/auth');
-const { requireAuthentication, executeCommand } = require('./lib/command-utils');
+const { executeCommand } = require('./lib/command-utils');
 const logger = require('./lib/logger');
 
 function showHelp() {
@@ -93,161 +92,6 @@ function parseGlobalArgs(args) {
   return { globalOptions, filteredArgs };
 }
 
-function parseArgs(args) {
-  const options = {
-    privacy: 'PUBLIC',
-    password: null,
-    title: null
-  };
-
-  let filePath = null;
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-
-    if (arg === '--private' || arg === '-p') {
-      options.privacy = 'PRIVATE';
-    } else if (arg === '--password') {
-      options.password = args[++i];
-    } else if (arg === '--title') {
-      options.title = args[++i];
-    } else if (arg === '--help' || arg === '-h') {
-      showHelp();
-      process.exit(0);
-    } else if (!arg.startsWith('-') && !filePath) {
-      filePath = arg;
-    }
-  }
-
-  return { filePath, options };
-}
-
-async function handleLinkCommand(args, globalOptions) {
-  if (args.length === 0) {
-    logger.error('Error: Please specify a URL to shorten');
-    logger.error('Usage: drplr link <url> [options]');
-    logger.error('Use "drplr help" for more information');
-    process.exit(1);
-  }
-
-  const { filePath: url, options } = parseArgs(args);
-
-  if (!url) {
-    logger.error('Error: Please specify a URL to shorten');
-    logger.error('Use "drplr help" for usage information');
-    process.exit(1);
-  }
-
-  await executeCommand(async () => {
-    const credentials = requireAuthentication();
-
-    logger.log(`Creating short link for ${url}...`);
-
-    const result = await createLink(url, credentials, options);
-
-    if (globalOptions.porcelain) {
-      logger.output(result.shortlink || result.link || result.url);
-    } else {
-      logger.log('✓ Link created successfully!');
-
-      if (options.title) {
-        logger.log(`Title: ${options.title}`);
-      }
-
-      if (result.privacy === 'PRIVATE') {
-        logger.log('Privacy: Private');
-      } else if (options.privacy === 'PRIVATE') {
-        logger.log('Privacy: Public (private link not supported or failed)');
-      }
-
-      if (options.password) {
-        logger.log('Password protected: Yes');
-      }
-
-      logger.log(`Short URL: ${result.shortlink || result.link || result.url}`);
-      logger.log(`Original URL: ${url}`);
-    }
-  }, 'Link creation');
-}
-
-async function handleNoteCommand(args, globalOptions) {
-  if (args.length === 0) {
-    logger.error('Error: Please specify text content or use --file option');
-    logger.error('Usage: drplr note "text content" [options]');
-    logger.error('       drplr note --file notes.txt [options]');
-    logger.error('       drplr note --code "console.log(\'hello\')" --lang javascript [options]');
-    logger.error('Use "drplr help" for more information');
-    process.exit(1);
-  }
-
-  // Parse note-specific arguments
-  let text = '';
-  let filePath = '';
-  let options = {};
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === '--file') {
-      filePath = args[++i];
-    } else if (arg === '--code') {
-      text = args[++i];
-      options.isCode = true;
-    } else if (arg === '--lang') {
-      options.lang = args[++i];
-    } else if (arg === '--private') {
-      options.privacy = 'PRIVATE';
-    } else if (arg === '--password') {
-      options.password = args[++i];
-    } else if (arg === '--title') {
-      options.title = args[++i];
-    } else if (!arg.startsWith('-') && !text && !filePath) {
-      text = arg;
-    }
-  }
-
-  await executeCommand(async () => {
-    const credentials = requireAuthentication();
-    let result;
-
-    if (filePath) {
-      logger.log(`Creating note from file ${filePath}...`);
-      result = await createNoteFromFile(filePath, credentials, options);
-    } else if (text) {
-      logger.log(`Creating note...`);
-      result = await createNote(text, credentials, options);
-    } else {
-      logger.error('Error: Please specify text content or use --file option');
-      process.exit(1);
-    }
-
-    if (globalOptions.porcelain) {
-      logger.output(result.shortlink || result.link || result.url);
-    } else {
-      logger.log('✓ Note created successfully!');
-
-      if (result.title) {
-        logger.log(`Title: ${result.title}`);
-      }
-
-      if (options.lang) {
-        logger.log(`Language: ${options.lang}`);
-      }
-
-      if (result.privacy === 'PRIVATE') {
-        logger.log('Privacy: Private');
-      } else if (options.privacy === 'PRIVATE') {
-        logger.log('Privacy: Public (private note not supported or failed)');
-      }
-
-      if (options.password) {
-        logger.log('Password protected: Yes');
-      }
-
-      logger.log(`Short URL: ${result.shortlink || result.link || result.url}`);
-    }
-  }, 'Note creation');
-}
-
 async function main() {
   const args = process.argv.slice(2);
   const { globalOptions, filteredArgs } = parseGlobalArgs(args);
@@ -261,12 +105,14 @@ async function main() {
   }
 
   if (filteredArgs[0] === 'link') {
-    await handleLinkCommand(filteredArgs.slice(1), globalOptions);
+    const linkCommand = handleLinkCommand(filteredArgs.slice(1), globalOptions);
+    await executeCommand(linkCommand, 'Link creation');
     return;
   }
 
   if (filteredArgs[0] === 'note') {
-    await handleNoteCommand(filteredArgs.slice(1), globalOptions);
+    const noteCommand = handleNoteCommand(filteredArgs.slice(1), globalOptions);
+    await executeCommand(noteCommand, 'Note creation');
     return;
   }
 
@@ -281,43 +127,9 @@ async function main() {
     return;
   }
 
-  const { filePath, options } = parseArgs(filteredArgs);
-
-  if (!filePath) {
-    logger.error('Error: Please specify a file to upload');
-    logger.error('Use "drplr help" for usage information');
-    process.exit(1);
-  }
-
-  await executeCommand(async () => {
-    const credentials = requireAuthentication();
-
-    logger.log(`Uploading ${path.basename(filePath)}...`);
-
-    const result = await uploadFile(filePath, credentials, options);
-
-    if (globalOptions.porcelain) {
-      logger.output(result.shortlink || result.link || result.url);
-    } else {
-      logger.log('✓ Upload successful!');
-
-      if (options.title) {
-        logger.log(`Title: ${options.title}`);
-      }
-
-      if (result.privacy === 'PRIVATE') {
-        logger.log('Privacy: Private');
-      } else if (options.privacy === 'PRIVATE') {
-        log('Privacy: Public (private upload not supported or failed)');
-      }
-
-      if (options.password) {
-        logger.log('Password protected: Yes');
-      }
-
-      logger.log(`URL: ${result.shortlink || result.link || result.url}`);
-    }
-  }, 'Upload');
+  // Default case: file upload
+  const uploadCommand = handleUploadCommand(filteredArgs, globalOptions);
+  await executeCommand(uploadCommand, 'Upload');
 }
 
 if (require.main === module) {
