@@ -16,20 +16,7 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 
 ## Planned Features
 
-### 1. Non-File Drop Types 📝
-
-#### Link Drops (URL Shortening) ✅
-- ✅ `drplr link <url>` - Create shortened links
-- ✅ `drplr link <url> --title "Custom Title"` - Link with custom title
-- ✅ `drplr link <url> --private --password secret` - Private/protected links
-
-#### Note Drops (Text Snippets)
-- `drplr note "Quick text note"` - Create text-based drops
-- `drplr note --file notes.txt` - Create note from file content
-- `drplr note --private "Secret note"` - Private text notes
-- `drplr note --code "console.log('hello')" --lang javascript` - Code snippets with syntax highlighting
-
-### 2. Drop Management 📁
+### Drop Management 📁
 
 #### List and Browse Drops
 - `drplr list` - List recent drops with pagination
@@ -51,7 +38,7 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 - `drplr referrers <drop_code>` - Show where traffic comes from
 - `drplr hits <drop_code>` - Detailed access logs
 
-### 3. Boards Management 📋
+### Boards Management 📋
 
 #### Board Operations
 - `drplr boards` - List available boards
@@ -62,7 +49,7 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 - `drplr board delete <board_id>` - Delete board
 - `drplr board watch <board_id>` - Subscribe to board notifications
 
-### 6. Enhanced Upload Features 🚀
+### Enhanced Upload Features 🚀
 
 #### Advanced Upload Options
 - `drplr upload *.png` - Batch upload with glob patterns
@@ -76,7 +63,7 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 - Resume interrupted uploads
 - Parallel uploads for multiple files
 
-### 7. Configuration and Profiles ⚙️
+### Configuration and Profiles ⚙️
 
 #### Multiple Profiles
 - `drplr profile create work` - Create named profiles
@@ -88,7 +75,7 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 - `drplr config set default-privacy private` - Set defaults
 - `drplr config set upload-directory ~/uploads` - Default upload paths
 
-### 8. Output and Integration 🔗
+### Output and Integration 🔗
 
 #### Output Formats
 - `drplr list --json` - JSON output for scripting
@@ -101,7 +88,7 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 - Shell aliases and shortcuts
 - Integration with file managers (drag & drop handlers)
 
-### 9. Monitoring and Maintenance 📊
+### Monitoring and Maintenance 📊
 
 #### Health and Diagnostics
 - `drplr doctor` - Check configuration and connectivity

@@ -3,6 +3,7 @@
 const path = require('path');
 const { uploadFile } = require('./lib/commands/upload');
 const { createLink } = require('./lib/commands/link');
+const { createNote, createNoteFromFile } = require('./lib/commands/note');
 const { handleAuthCommand } = require('./lib/commands/auth');
 const { requireAuthentication, executeCommand } = require('./lib/command-utils');
 const logger = require('./lib/logger');
@@ -15,6 +16,9 @@ drplr - Droplr CLI tool for uploading files and creating links
 Usage:
   drplr <file>                           Upload a file
   drplr link <url>                       Create a short link
+  drplr note <text>                      Create a text note
+  drplr note --file <file>               Create note from file
+  drplr note --code <code> --lang <lang> Create code snippet
   drplr auth token <jwt_token>           Set JWT token from browser
   drplr auth login <username> <password> Set username/password
   drplr help                             Show this help
@@ -34,12 +38,17 @@ Examples:
   drplr image.png
   drplr document.pdf --private
   drplr secret.txt --private --password mypass123
-  
+
   # Link shortening
   drplr link https://example.com/very/long/url
   drplr link https://example.com --title "Custom Title"
   drplr link https://example.com --private --password secret
-  
+
+  # Note/text drops
+  drplr note "Quick text note"
+  drplr note --file notes.txt --private
+  drplr note --code "console.log('hello')" --lang javascript --title "Code Snippet"
+
   # Using global flags
   drplr image.png --porcelain              # Only output the URL
   drplr image.png --debug                  # Show API response details
@@ -57,7 +66,7 @@ Authentication:
 
 Get help at: https://github.com/Droplr/droplr-js
 `;
-  
+
   logger.info(helpOutput);
 }
 
@@ -131,7 +140,7 @@ async function handleLinkCommand(args, globalOptions) {
 
   await executeCommand(async () => {
     const credentials = requireAuthentication();
-    
+
     logger.log(`Creating short link for ${url}...`);
 
     const result = await createLink(url, credentials, options);
@@ -161,10 +170,88 @@ async function handleLinkCommand(args, globalOptions) {
   }, 'Link creation');
 }
 
+async function handleNoteCommand(args, globalOptions) {
+  if (args.length === 0) {
+    logger.error('Error: Please specify text content or use --file option');
+    logger.error('Usage: drplr note "text content" [options]');
+    logger.error('       drplr note --file notes.txt [options]');
+    logger.error('       drplr note --code "console.log(\'hello\')" --lang javascript [options]');
+    logger.error('Use "drplr help" for more information');
+    process.exit(1);
+  }
+
+  // Parse note-specific arguments
+  let text = '';
+  let filePath = '';
+  let options = {};
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--file') {
+      filePath = args[++i];
+    } else if (arg === '--code') {
+      text = args[++i];
+      options.isCode = true;
+    } else if (arg === '--lang') {
+      options.lang = args[++i];
+    } else if (arg === '--private') {
+      options.privacy = 'PRIVATE';
+    } else if (arg === '--password') {
+      options.password = args[++i];
+    } else if (arg === '--title') {
+      options.title = args[++i];
+    } else if (!arg.startsWith('-') && !text && !filePath) {
+      text = arg;
+    }
+  }
+
+  await executeCommand(async () => {
+    const credentials = requireAuthentication();
+    let result;
+
+    if (filePath) {
+      logger.log(`Creating note from file ${filePath}...`);
+      result = await createNoteFromFile(filePath, credentials, options);
+    } else if (text) {
+      logger.log(`Creating note...`);
+      result = await createNote(text, credentials, options);
+    } else {
+      logger.error('Error: Please specify text content or use --file option');
+      process.exit(1);
+    }
+
+    if (globalOptions.porcelain) {
+      logger.output(result.shortlink || result.link || result.url);
+    } else {
+      logger.log('✓ Note created successfully!');
+
+      if (result.title) {
+        logger.log(`Title: ${result.title}`);
+      }
+
+      if (options.lang) {
+        logger.log(`Language: ${options.lang}`);
+      }
+
+      if (result.privacy === 'PRIVATE') {
+        logger.log('Privacy: Private');
+      } else if (options.privacy === 'PRIVATE') {
+        logger.log('Privacy: Public (private note not supported or failed)');
+      }
+
+      if (options.password) {
+        logger.log('Password protected: Yes');
+      }
+
+      logger.log(`Short URL: ${result.shortlink || result.link || result.url}`);
+    }
+  }, 'Note creation');
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const { globalOptions, filteredArgs } = parseGlobalArgs(args);
-  
+
   // Initialize logger with global options
   logger.initLogger(globalOptions);
 
@@ -175,6 +262,11 @@ async function main() {
 
   if (filteredArgs[0] === 'link') {
     await handleLinkCommand(filteredArgs.slice(1), globalOptions);
+    return;
+  }
+
+  if (filteredArgs[0] === 'note') {
+    await handleNoteCommand(filteredArgs.slice(1), globalOptions);
     return;
   }
 
@@ -199,7 +291,7 @@ async function main() {
 
   await executeCommand(async () => {
     const credentials = requireAuthentication();
-    
+
     logger.log(`Uploading ${path.basename(filePath)}...`);
 
     const result = await uploadFile(filePath, credentials, options);
