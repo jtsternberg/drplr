@@ -4,6 +4,7 @@ const { handleUploadCommand } = require('./lib/commands/upload');
 const { handleLinkCommand } = require('./lib/commands/link');
 const { handleNoteCommand } = require('./lib/commands/note');
 const { handleAuthCommand } = require('./lib/commands/auth');
+const { handleBoardCommand, handleBoardsCommand } = require('./lib/commands/board');
 const { executeCommand } = require('./lib/command-utils');
 const logger = require('./lib/logger');
 
@@ -18,6 +19,12 @@ Usage:
   drplr note <text>                      Create a text note
   drplr note --file <file>               Create note from file
   drplr note --code <code> --lang <lang> Create code snippet
+  drplr boards                           List all boards
+  drplr board create <title>             Create a new board
+  drplr board <board_id>                 Show board contents
+  drplr board update <id> --title <name> Update board
+  drplr board delete <board_id>          Delete a board
+  drplr board watch <board_id>           Subscribe to board notifications
   drplr auth token <jwt_token>           Set JWT token from browser
   drplr auth login <username> <password> Set username/password
   drplr help                             Show this help
@@ -26,6 +33,7 @@ Options:
   --private, -p                          Make upload/link private (default: public)
   --password <password>                  Set password protection
   --title <title>                        Set custom title (links only)
+  --board <board_name>                   Upload to specific board
   --help, -h                             Show help
 
 Global Flags:
@@ -47,6 +55,13 @@ Examples:
   drplr note "Quick text note"
   drplr note --file notes.txt --private
   drplr note --code "console.log('hello')" --lang javascript --title "Code Snippet"
+
+  # Board management
+  drplr boards                             # List all boards
+  drplr board create "Project Assets"      # Create new board
+  drplr board abc123                       # Show board contents
+  drplr board update abc123 --title "New Name" # Update board title
+  drplr upload image.png --board "Project Assets" # Upload to specific board
 
   # Using global flags
   drplr image.png --porcelain              # Only output the URL
@@ -124,6 +139,18 @@ async function main() {
   // Keep 'config' as alias for backwards compatibility
   if (filteredArgs[0] === 'config') {
     await handleAuthCommand(filteredArgs.slice(1));
+    return;
+  }
+
+  if (filteredArgs[0] === 'boards') {
+    const boardsCommand = handleBoardsCommand(filteredArgs.slice(1), globalOptions);
+    await executeCommand(boardsCommand, 'Board list');
+    return;
+  }
+
+  if (filteredArgs[0] === 'board') {
+    const boardCommand = handleBoardCommand(filteredArgs.slice(1), globalOptions);
+    await executeCommand(boardCommand, 'Board operation');
     return;
   }
 

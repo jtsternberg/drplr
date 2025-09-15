@@ -14,7 +14,8 @@ describe('arg-parser', () => {
       expect(result.options).toEqual({
         privacy: 'PRIVATE',
         password: 'secret123',
-        title: 'My Title'
+        title: 'My Title',
+        board: null
       });
       expect(result.remainingArgs).toEqual([]);
     });
@@ -50,8 +51,17 @@ describe('arg-parser', () => {
       expect(result.options).toEqual({
         privacy: 'PUBLIC',
         password: null,
-        title: null
+        title: null,
+        board: null
       });
+      expect(result.remainingArgs).toEqual(['file.txt']);
+    });
+
+    test('should parse board argument', () => {
+      const args = ['--board', 'Project Assets', 'file.txt'];
+      const result = parseCommonArgs(args);
+      
+      expect(result.options.board).toBe('Project Assets');
       expect(result.remainingArgs).toEqual(['file.txt']);
     });
   });
@@ -151,6 +161,7 @@ describe('arg-parser', () => {
         privacy: 'PRIVATE',
         password: 'secret',
         title: 'Python Script',
+        board: null,
         lang: 'python',
         isCode: true
       });
