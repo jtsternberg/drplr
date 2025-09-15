@@ -4,36 +4,29 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Droplr CLI Roadmap](#droplr-cli-roadmap)
-  - [Current CLI Features ✅](#current-cli-features-)
-    - [Core Upload & Drop Features](#core-upload--drop-features)
-    - [Authentication & Configuration](#authentication--configuration)
-    - [Command Interface & UX](#command-interface--ux)
-    - [Developer Experience](#developer-experience)
-  - [Planned Features](#planned-features)
-    - [Drop Management 📁](#drop-management-)
-      - [List and Browse Drops](#list-and-browse-drops)
-      - [Drop Information and Updates](#drop-information-and-updates)
-      - [Drop Statistics and Analytics](#drop-statistics-and-analytics)
-    - [Boards Management 📋](#boards-management-)
-      - [Board Operations](#board-operations)
-    - [Enhanced Upload Features 🚀](#enhanced-upload-features-)
-      - [Advanced Upload Options](#advanced-upload-options)
-      - [Upload Progress and Resumption](#upload-progress-and-resumption)
-    - [Configuration and Profiles ⚙️](#configuration-and-profiles-)
-      - [Multiple Profiles](#multiple-profiles)
-      - [Advanced Configuration](#advanced-configuration)
-    - [Output and Integration 🔗](#output-and-integration-)
-      - [Output Formats](#output-formats)
-      - [Shell Integration](#shell-integration)
-    - [Monitoring and Maintenance 📊](#monitoring-and-maintenance-)
-      - [Health and Diagnostics](#health-and-diagnostics)
-  - [Technical Considerations](#technical-considerations)
-    - [Architecture ✅](#architecture-)
-    - [Dependencies ✅](#dependencies-)
-    - [User Experience ✅](#user-experience-)
-  - [Community and Contribution](#community-and-contribution)
-    - [Open Source Considerations ✅](#open-source-considerations-)
+- [Current CLI Features ✅](#current-cli-features-)
+  - [Core Upload & Drop Features](#core-upload--drop-features)
+  - [Authentication & Configuration](#authentication--configuration)
+  - [Command Interface & UX](#command-interface--ux)
+  - [Developer Experience](#developer-experience)
+- [Planned Features](#planned-features)
+  - [Drop Management 📁](#drop-management-)
+    - [List and Browse Drops](#list-and-browse-drops)
+    - [Drop Information and Updates](#drop-information-and-updates)
+    - [Drop Statistics and Analytics](#drop-statistics-and-analytics)
+  - [Boards Management 📋](#boards-management-)
+    - [Board Operations](#board-operations)
+  - [Enhanced Upload Features 🚀](#enhanced-upload-features-)
+    - [Advanced Upload Options](#advanced-upload-options)
+    - [Upload Progress and Resumption](#upload-progress-and-resumption)
+  - [Configuration and Profiles 👥](#configuration-and-profiles-)
+    - [Multiple Profiles](#multiple-profiles)
+    - [Advanced Configuration](#advanced-configuration)
+  - [Output and Integration 🔗](#output-and-integration-)
+    - [Output Formats](#output-formats)
+    - [Shell Integration](#shell-integration)
+  - [Monitoring and Maintenance 📊](#monitoring-and-maintenance-)
+    - [Health and Diagnostics](#health-and-diagnostics)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -118,17 +111,20 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 - Resume interrupted uploads
 - Parallel uploads for multiple files
 
-### Configuration and Profiles ⚙️
+### Configuration and Profiles 👥
 
 #### Multiple Profiles
-- `drplr profile create work` - Create named profiles
-- `drplr profile use work` - Switch between profiles
-- `drplr --profile work upload file.png` - Use specific profile for command
+*Local CLI feature to manage multiple Droplr accounts (work/personal) without re-authentication*
+- `droplr profile create work` - Create named authentication profile
+- `droplr profile list` - Show all configured profiles
+- `droplr profile use work` - Switch default profile
+- `droplr --profile work upload file.png` - Use specific profile for single command
+- Each profile stores its own credentials (JWT token or username/password)
 
 #### Advanced Configuration
-- `drplr config show` - Display current configuration
-- `drplr config set default-privacy private` - Set defaults
-- `drplr config set upload-directory ~/uploads` - Default upload paths
+- `drplr config show` - Display current configuration and active profile
+- `drplr config set default-privacy private` - Set default behaviors per profile
+- `drplr config set upload-directory ~/uploads` - Configure default upload paths
 
 ### Output and Integration 🔗
 
@@ -150,31 +146,6 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 - `drplr quota` - Show storage usage and limits
 - `drplr cleanup` - Remove orphaned/expired drops
 
-## Technical Considerations
-
-### Architecture ✅
-- ✅ Modular structure with separate modules for each feature area (commands/, lib/)
-- ✅ Extended authentication system works across all new features
-- ✅ Consistent error handling and user experience patterns
-- ✅ DRY principles implemented with centralized argument parsing and utilities
-
-### Dependencies ✅
-- ✅ Leveraging existing `droplr-api` SDK for all operations
-- ✅ Minimal additional dependencies (only Jest for testing)
-- ✅ Node.js 14+ compatibility maintained
-
-### User Experience ✅
-- ✅ Consistent command structure and naming conventions
-- ✅ Helpful error messages with field-specific validation details
-- ✅ Progressive disclosure (basic → advanced features)
-- ✅ Full backward compatibility with existing commands
-
-## Community and Contribution
-
-### Open Source Considerations ✅
-- ✅ Well-documented API for contributors (TESTING.md, inline docs)
-- Clear contribution guidelines (established patterns)
-- ✅ Comprehensive test suite (49 passing tests with Jest)
-- ✅ Semantic versioning for releases
+---
 
 This roadmap represents the full potential of the Droplr CLI tool. Features will be implemented based on user demand, community feedback, and development resources.
