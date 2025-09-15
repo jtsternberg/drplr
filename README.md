@@ -9,13 +9,13 @@ npm install -g drplr
 ```
 then use it like this:
 ```bash
-drplr config login your_username your_password
+drplr auth login your_username your_password
 drplr file.png
 ```
 
 _Or_ try it without installing:
 ```bash
-npx drplr config login your_username your_password
+npx drplr auth login your_username your_password
 npx drplr file.png
 ```
 
@@ -25,7 +25,7 @@ Choose one of these authentication methods:
 
 ### Method 1: Username/Password (Easiest)
 ```bash
-drplr config login your_username your_password
+drplr auth login your_username your_password
 ```
 
 ### Method 2: JWT Token (More Secure)
@@ -34,53 +34,143 @@ drplr config login your_username your_password
 3. Copy the JWT token value
 4. Configure the CLI:
    ```bash
-   drplr config token eyJhbGciOiJIUzI1NiIs...
+   drplr auth token eyJhbGciOiJIUzI1NiIs...
    ```
 
 **Note:** JWT tokens may expire and may need to be refreshed periodically.
 
 ## Usage
 
-### Upload a file
+### File Uploads
 ```bash
+# Upload a file
 drplr file.png
-```
 
-### Upload a private file
-```bash
+# Upload a private file
 drplr file.png --private
-```
 
-### Upload with password protection
-```bash
+# Upload with password protection
 drplr file.png --private --password mypassword
+
+# Upload with custom title
+drplr document.pdf --title "Important Document"
 ```
 
-### Show help
+### Link Shortening
 ```bash
+# Create a short link
+drplr link https://example.com/very/long/url
+
+# Create a private link with title
+drplr link https://example.com --private --title "My Link"
+
+# Create a password-protected link
+drplr link https://example.com --private --password secret123
+```
+
+### Note Creation
+```bash
+# Create a text note
+drplr note "This is my quick note"
+
+# Create a note from a file
+drplr note --file notes.txt
+
+# Create a private note with custom title
+drplr note "Secret information" --private --title "Confidential"
+
+# Create a code snippet
+drplr note --code 'console.log("Hello, World!")' --lang javascript
+
+# Create code snippet with title
+drplr note --code 'def hello(): print("Hi!")' --lang python --title "Python Hello"
+```
+
+### Global Options
+```bash
+# Minimal output (just the URL)
+drplr file.png --porcelain
+
+# Debug mode with full API responses
+drplr file.png --debug
+
+# Combine global and command-specific options
+drplr note "Debug this" --debug --private
+```
+
+### Help and Information
+```bash
+# Show comprehensive help
 drplr help
+
+# Get help for specific commands (shows in usage examples)
+drplr link
+drplr note
 ```
 
 ## Features
 
+### Core Drop Types
 - ✅ File uploads to Droplr using official SDK
+- ✅ Link shortening (URL drops) with title support  
+- ✅ Note creation (text, file-based, and code snippets)
+- ✅ Code syntax highlighting for 25+ programming languages
+- ✅ Custom titles for all drop types
+
+### Privacy & Security
+- ✅ Public and private uploads/links/notes
+- ✅ Password protection for all drop types
 - ✅ JWT token authentication from browser
 - ✅ Username/password authentication
-- ✅ Public and private uploads
-- ✅ Password protection
-- ✅ Multiple file format support
-- ✅ Error handling and user feedback
-- ✅ Configuration management
+- ✅ Encrypted credential storage with machine-specific keys
+
+### User Experience
+- ✅ Comprehensive help system with examples
+- ✅ Global flags (--porcelain for minimal output, --debug for diagnostics)
+- ✅ Detailed error messages with field-specific validation
+- ✅ Multiple file format support with automatic MIME type detection
+- ✅ Backward compatibility (config command still works as alias for auth)
+
+### Developer Experience
+- ✅ Comprehensive test suite (49 passing tests)
+- ✅ Modular architecture with clean separation of concerns
+- ✅ Complete documentation (README, TESTING, ROADMAP)
+- ✅ Multiple test script variants for different scenarios
 
 ## Requirements
 
 - Node.js 14.0.0 or higher
 - Valid Droplr account
 
+## Testing
+
+This project includes a comprehensive test suite with Jest:
+
+```bash
+# Run all working tests (49 tests)
+npm test
+
+# Run only unit tests  
+npm run test:unit
+
+# Run only integration tests
+npm run test:integration  
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+```
+
+See [TESTING.md](TESTING.md) for detailed information about the test architecture.
+
 ## Documentation
 
-- [Droplr JS SDK](https://github.com/Droplr/droplr-js)
-- [Droplr API Docs](https://droplr.github.io/docs/)
+- [Testing Guide](TESTING.md) - Comprehensive testing documentation
+- [Development Roadmap](ROADMAP.md) - Current features and future plans
+- [Droplr JS SDK](https://github.com/Droplr/droplr-js) - Official SDK documentation
+- [Droplr API Docs](https://droplr.github.io/docs/) - API reference
 
 ## Alternative Installation Methods
 
