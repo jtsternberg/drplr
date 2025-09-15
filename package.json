@@ -23,6 +23,26 @@
   "dependencies": {
     "droplr-api": "^1.0.0"
   },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
+  "scripts": {
+    "test": "jest --testPathPattern='(arg-parser|simplified|integration)\\.test\\.js'",
+    "test:unit": "jest --testPathPattern='(arg-parser|simplified)\\.test\\.js'",
+    "test:integration": "jest --testPathPattern='integration\\.test\\.js'",
+    "test:all": "jest",
+    "test:watch": "jest --watch --testPathPattern='(arg-parser|simplified|integration)\\.test\\.js'",
+    "test:coverage": "jest --coverage --testPathPattern='(arg-parser|simplified|integration)\\.test\\.js'"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "lib/**/*.js",
+      "drplr.js",
+      "!lib/**/*.spec.js",
+      "!lib/**/*.test.js"
+    ]
+  },
   "engines": {
     "node": ">=14.0.0"
   }
