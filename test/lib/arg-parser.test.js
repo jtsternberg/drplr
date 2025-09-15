@@ -43,6 +43,14 @@ describe('arg-parser', () => {
       expect(result.remainingArgs).toEqual(['--help', 'file.txt']);
     });
 
+    test('should parse board argument', () => {
+      const args = ['--board', 'Project Assets', 'file.txt'];
+      const result = parseCommonArgs(args);
+      
+      expect(result.options.board).toBe('Project Assets');
+      expect(result.remainingArgs).toEqual(['file.txt']);
+    });
+
     test('should set default values', () => {
       const args = ['file.txt'];
       const result = parseCommonArgs(args);
@@ -50,7 +58,8 @@ describe('arg-parser', () => {
       expect(result.options).toEqual({
         privacy: 'PUBLIC',
         password: null,
-        title: null
+        title: null,
+        board: null
       });
       expect(result.remainingArgs).toEqual(['file.txt']);
     });
@@ -80,6 +89,15 @@ describe('arg-parser', () => {
       
       expect(result.filePath).toBe('actual-file.txt');
       expect(result.options.password).toBe('secret');
+    });
+
+    test('should handle board option in upload', () => {
+      const args = ['file.txt', '--board', 'Project Assets', '--private'];
+      const result = parseUploadArgs(args);
+      
+      expect(result.filePath).toBe('file.txt');
+      expect(result.options.board).toBe('Project Assets');
+      expect(result.options.privacy).toBe('PRIVATE');
     });
   });
 

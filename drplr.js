@@ -4,6 +4,7 @@ const { handleUploadCommand } = require('./lib/commands/upload');
 const { handleLinkCommand } = require('./lib/commands/link');
 const { handleNoteCommand } = require('./lib/commands/note');
 const { handleAuthCommand } = require('./lib/commands/auth');
+const { handleBoardCommand } = require('./lib/commands/board');
 const { executeCommand } = require('./lib/command-utils');
 const logger = require('./lib/logger');
 
@@ -20,12 +21,19 @@ Usage:
   drplr note --code <code> --lang <lang> Create code snippet
   drplr auth token <jwt_token>           Set JWT token from browser
   drplr auth login <username> <password> Set username/password
+  drplr boards                           List available boards
+  drplr board create "Project Assets"    Create new board
+  drplr board <board_id>                 Show board contents
+  drplr board update <board_id> --title "New Name"  Update board
+  drplr board delete <board_id>          Delete board
+  drplr board watch <board_id>           Subscribe to board notifications
   drplr help                             Show this help
 
 Options:
   --private, -p                          Make upload/link private (default: public)
   --password <password>                  Set password protection
   --title <title>                        Set custom title (links only)
+  --board <board_name>                   Upload to specific board
   --help, -h                             Show help
 
 Global Flags:
@@ -37,6 +45,7 @@ Examples:
   drplr image.png
   drplr document.pdf --private
   drplr secret.txt --private --password mypass123
+  drplr image.png --board "Project Assets"
 
   # Link shortening
   drplr link https://example.com/very/long/url
@@ -47,6 +56,12 @@ Examples:
   drplr note "Quick text note"
   drplr note --file notes.txt --private
   drplr note --code "console.log('hello')" --lang javascript --title "Code Snippet"
+
+  # Board management
+  drplr boards                             # List all boards
+  drplr board create "Website Assets"      # Create new board
+  drplr board 12345                        # Show board contents
+  drplr board update 12345 --title "UI Assets"  # Update board title
 
   # Using global flags
   drplr image.png --porcelain              # Only output the URL
@@ -124,6 +139,13 @@ async function main() {
   // Keep 'config' as alias for backwards compatibility
   if (filteredArgs[0] === 'config') {
     await handleAuthCommand(filteredArgs.slice(1));
+    return;
+  }
+
+  if (filteredArgs[0] === 'boards' || filteredArgs[0] === 'board') {
+    const boardArgs = filteredArgs[0] === 'boards' ? [] : filteredArgs.slice(1);
+    const boardCommand = handleBoardCommand(boardArgs, globalOptions);
+    await executeCommand(boardCommand, 'Board operation');
     return;
   }
 

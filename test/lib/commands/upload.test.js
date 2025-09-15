@@ -115,7 +115,7 @@ describe('upload command', () => {
       };
       
       mockClient.drops.create.mockResolvedValue(mockResult);
-      mockHandlePrivateDropCreation.mockResolvedValue(mockResult);
+      handlePrivateDropCreation.mockResolvedValue(mockResult);
       
       const result = await uploadFile('test.txt', { type: 'jwt' }, {});
       
@@ -141,7 +141,7 @@ describe('upload command', () => {
     test('should detect MIME types correctly', async () => {
       const mockResult = { shortlink: 'https://test.com' };
       mockClient.drops.create.mockResolvedValue(mockResult);
-      mockHandlePrivateDropCreation.mockResolvedValue(mockResult);
+      handlePrivateDropCreation.mockResolvedValue(mockResult);
 
       // Test different file types
       await uploadFile('image.png', { type: 'jwt' }, {});
@@ -163,7 +163,7 @@ describe('upload command', () => {
     test('should handle upload with custom title', async () => {
       const mockResult = { shortlink: 'https://test.com' };
       mockClient.drops.create.mockResolvedValue(mockResult);
-      mockHandlePrivateDropCreation.mockResolvedValue(mockResult);
+      handlePrivateDropCreation.mockResolvedValue(mockResult);
 
       await uploadFile('test.txt', { type: 'jwt' }, { title: 'Custom Title' });
       
@@ -175,7 +175,7 @@ describe('upload command', () => {
     test('should handle private uploads', async () => {
       const mockResult = { shortlink: 'https://test.com' };
       mockClient.drops.create.mockResolvedValue(mockResult);
-      mockHandlePrivateDropCreation.mockResolvedValue(mockResult);
+      handlePrivateDropCreation.mockResolvedValue(mockResult);
 
       const options = { privacy: 'PRIVATE', password: 'secret' };
       await uploadFile('test.txt', { type: 'jwt' }, options);
@@ -184,7 +184,7 @@ describe('upload command', () => {
         privacy: 'PRIVATE',
         password: 'secret'
       }));
-      expect(mockHandlePrivateDropCreation).toHaveBeenCalledWith(mockClient, mockResult, options);
+      expect(handlePrivateDropCreation).toHaveBeenCalledWith(mockClient, mockResult, options);
     });
   });
 });
