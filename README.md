@@ -2,6 +2,10 @@
 
 A command-line interface for uploading files to Droplr using their official SDK.
 
+[![npm version](https://badge.fury.io/js/drplr.svg)](https://badge.fury.io/js/drplr)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/jtsternberg/drplr/refs/heads/master/LICENSE)
+[![npm downloads](https://img.shields.io/npm/dt/drplr.svg?style=flat)](https://www.npmjs.com/package/drplr)
+
 ## Installation
 
 ```bash
@@ -112,7 +116,7 @@ drplr note
 
 ### Core Drop Types
 - ✅ File uploads to Droplr using official SDK
-- ✅ Link shortening (URL drops) with title support  
+- ✅ Link shortening (URL drops) with title support
 - ✅ Note creation (text, file-based, and code snippets)
 - ✅ Code syntax highlighting for 25+ programming languages
 - ✅ Custom titles for all drop types
@@ -150,11 +154,11 @@ This project includes a comprehensive test suite with Jest:
 # Run all working tests (49 tests)
 npm test
 
-# Run only unit tests  
+# Run only unit tests
 npm run test:unit
 
 # Run only integration tests
-npm run test:integration  
+npm run test:integration
 
 # Run tests in watch mode
 npm run test:watch

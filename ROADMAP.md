@@ -1,5 +1,42 @@
 # Droplr CLI Roadmap
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Droplr CLI Roadmap](#droplr-cli-roadmap)
+  - [Current CLI Features ✅](#current-cli-features-)
+    - [Core Upload & Drop Features](#core-upload--drop-features)
+    - [Authentication & Configuration](#authentication--configuration)
+    - [Command Interface & UX](#command-interface--ux)
+    - [Developer Experience](#developer-experience)
+  - [Planned Features](#planned-features)
+    - [Drop Management 📁](#drop-management-)
+      - [List and Browse Drops](#list-and-browse-drops)
+      - [Drop Information and Updates](#drop-information-and-updates)
+      - [Drop Statistics and Analytics](#drop-statistics-and-analytics)
+    - [Boards Management 📋](#boards-management-)
+      - [Board Operations](#board-operations)
+    - [Enhanced Upload Features 🚀](#enhanced-upload-features-)
+      - [Advanced Upload Options](#advanced-upload-options)
+      - [Upload Progress and Resumption](#upload-progress-and-resumption)
+    - [Configuration and Profiles ⚙️](#configuration-and-profiles-)
+      - [Multiple Profiles](#multiple-profiles)
+      - [Advanced Configuration](#advanced-configuration)
+    - [Output and Integration 🔗](#output-and-integration-)
+      - [Output Formats](#output-formats)
+      - [Shell Integration](#shell-integration)
+    - [Monitoring and Maintenance 📊](#monitoring-and-maintenance-)
+      - [Health and Diagnostics](#health-and-diagnostics)
+  - [Technical Considerations](#technical-considerations)
+    - [Architecture ✅](#architecture-)
+    - [Dependencies ✅](#dependencies-)
+    - [User Experience ✅](#user-experience-)
+  - [Community and Contribution](#community-and-contribution)
+    - [Open Source Considerations ✅](#open-source-considerations-)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 This roadmap outlines potential features and enhancements for the `drplr` CLI tool based on the full capabilities of the [Droplr JavaScript SDK](https://github.com/Droplr/droplr-js).
 
 ## Current CLI Features ✅
@@ -115,9 +152,9 @@ This roadmap outlines potential features and enhancements for the `drplr` CLI to
 
 ## Technical Considerations
 
-### Architecture ✅ 
+### Architecture ✅
 - ✅ Modular structure with separate modules for each feature area (commands/, lib/)
-- ✅ Extended authentication system works across all new features  
+- ✅ Extended authentication system works across all new features
 - ✅ Consistent error handling and user experience patterns
 - ✅ DRY principles implemented with centralized argument parsing and utilities
 
