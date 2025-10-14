@@ -18,6 +18,7 @@ Usage:
   drplr note <text>                      Create a text note
   drplr note --file <file>               Create note from file
   drplr note --code <code> --lang <lang> Create code snippet
+  drplr note --code --file <file>        Create code snippet from file
   drplr auth token <jwt_token>           Set JWT token from browser
   drplr auth login <username> <password> Set username/password
   drplr help                             Show this help
@@ -47,6 +48,7 @@ Examples:
   drplr note "Quick text note"
   drplr note --file notes.txt --private
   drplr note --code "console.log('hello')" --lang javascript --title "Code Snippet"
+  drplr note --code --file script.js --private
 
   # Using global flags
   drplr image.png --porcelain              # Only output the URL
