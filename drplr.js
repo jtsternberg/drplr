@@ -21,6 +21,7 @@ Usage:
   drplr note --code --file <file>        Create code snippet from file
   drplr auth token <jwt_token>           Set JWT token from browser
   drplr auth login <username> <password> Set username/password
+  drplr auth 1password <item>            Use 1Password CLI for credentials
   drplr help                             Show this help
 
 Options:
@@ -56,13 +57,17 @@ Examples:
   drplr link https://example.com --porcelain --debug  # Minimal output + debug info
 
 Authentication:
-  # Method 1: Extract JWT from browser (easiest)
+  # Method 1: 1Password CLI (recommended)
+  # Requires 1Password CLI: https://developer.1password.com/docs/cli
+  drplr auth 1password "Droplr"          # Use item name or ID
+
+  # Method 2: Extract JWT from browser
   # 1. Log into https://d.pr in your browser
   # 2. Open Chrome DevTools > Application > Cookies > d.pr
   # 3. Copy the JWT token value
   drplr auth token eyJhbGciOiJIUzI1NiIs...
 
-  # Method 2: Use username/password
+  # Method 3: Use username/password
   drplr auth login your_username your_password
 
 Get help at: https://github.com/Droplr/droplr-js
