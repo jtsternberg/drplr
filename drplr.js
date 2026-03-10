@@ -4,6 +4,7 @@ const { handleUploadCommand } = require('./lib/commands/upload');
 const { handleLinkCommand } = require('./lib/commands/link');
 const { handleNoteCommand } = require('./lib/commands/note');
 const { handleAuthCommand } = require('./lib/commands/auth');
+const { handleCompletionsCommand } = require('./lib/commands/completions');
 const { executeCommand } = require('./lib/command-utils');
 const logger = require('./lib/logger');
 
@@ -22,6 +23,7 @@ Usage:
   drplr auth token <jwt_token>           Set JWT token from browser
   drplr auth login <username> <password> Set username/password
   drplr auth 1password <item>            Use 1Password CLI for credentials
+  drplr completions [shell]              Generate shell completions
   drplr help                             Show this help
 
 Options:
@@ -70,11 +72,22 @@ Authentication:
   # Method 3: Use username/password
   drplr auth login your_username your_password
 
+Shell Completions:
+  eval "$(drplr completions zsh)"        # Add to ~/.zshrc
+  eval "$(drplr completions bash)"       # Add to ~/.bashrc
+  drplr completions fish | source        # Add to fish config
+
 Get help at: https://github.com/Droplr/droplr-js
 `;
 
   logger.info(helpOutput);
 }
+
+// Global-only flags (not in common options from arg-parser)
+const globalFlagsMeta = [
+  { long: '--porcelain', description: 'Minimal output, only the URL' },
+  { long: '--debug', description: 'Debug mode with full API responses' }
+];
 
 function parseGlobalArgs(args) {
   const globalOptions = {
@@ -126,6 +139,11 @@ async function main() {
     return;
   }
 
+  if (filteredArgs[0] === 'completions') {
+    handleCompletionsCommand(filteredArgs.slice(1));
+    return;
+  }
+
   if (filteredArgs[0] === 'auth') {
     await handleAuthCommand(filteredArgs.slice(1));
     return;
@@ -141,6 +159,8 @@ async function main() {
   const uploadCommand = handleUploadCommand(filteredArgs, globalOptions);
   await executeCommand(uploadCommand, 'Upload');
 }
+
+module.exports = { globalFlagsMeta };
 
 if (require.main === module) {
   main().catch(error => {
