@@ -43,6 +43,18 @@ drplr auth login your_username your_password
 
 **Note:** JWT tokens may expire and may need to be refreshed periodically.
 
+### Method 3: 1Password CLI (Recommended)
+Requires the [1Password CLI](https://developer.1password.com/docs/cli):
+```bash
+# Auto-detect Droplr item in 1Password
+drplr auth 1password
+
+# Or specify item by name
+drplr auth 1password "My Droplr Login"
+```
+
+Credentials are fetched from 1Password at runtime — nothing is stored on disk.
+
 ## Usage
 
 ### File Uploads
@@ -102,6 +114,17 @@ drplr file.png --debug
 drplr note "Debug this" --debug --private
 ```
 
+### Shell Completions
+```bash
+# Auto-install for your shell (zsh, bash, or fish)
+drplr completions --install
+
+# Or manually load (add to your shell rc file)
+eval "$(drplr completions zsh)"    # zsh
+eval "$(drplr completions bash)"   # bash
+drplr completions fish | source    # fish
+```
+
 ### Help and Information
 ```bash
 # Show comprehensive help
@@ -126,6 +149,7 @@ drplr note
 - ✅ Password protection for all drop types
 - ✅ JWT token authentication from browser
 - ✅ Username/password authentication
+- ✅ 1Password CLI integration (credentials fetched at runtime, never stored)
 - ✅ Encrypted credential storage with machine-specific keys
 
 ### User Experience
@@ -133,6 +157,7 @@ drplr note
 - ✅ Global flags (--porcelain for minimal output, --debug for diagnostics)
 - ✅ Detailed error messages with field-specific validation
 - ✅ Multiple file format support with automatic MIME type detection
+- ✅ Shell completions for zsh, bash, and fish (auto-install or eval)
 - ✅ Backward compatibility (config command still works as alias for auth)
 
 ### Developer Experience
