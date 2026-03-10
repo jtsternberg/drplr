@@ -73,9 +73,10 @@ Authentication:
   drplr auth login your_username your_password
 
 Shell Completions:
-  eval "$(drplr completions zsh)"        # Add to ~/.zshrc
-  eval "$(drplr completions bash)"       # Add to ~/.bashrc
-  drplr completions fish | source        # Add to fish config
+  drplr completions --install            # Auto-install for your shell
+  eval "$(drplr completions zsh)"        # Or manually load for zsh
+  eval "$(drplr completions bash)"       # Or manually load for bash
+  drplr completions fish | source        # Or manually load for fish
 
 Get help at: https://github.com/Droplr/droplr-js
 `;
