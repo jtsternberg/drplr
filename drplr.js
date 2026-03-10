@@ -78,6 +78,7 @@ function parseGlobalArgs(args) {
   };
 
   const filteredArgs = [];
+  let showHelp = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -86,22 +87,24 @@ function parseGlobalArgs(args) {
       globalOptions.porcelain = true;
     } else if (arg === '--debug') {
       globalOptions.debug = true;
+    } else if (arg === '--help' || arg === '-h') {
+      showHelp = true;
     } else {
       filteredArgs.push(arg);
     }
   }
 
-  return { globalOptions, filteredArgs };
+  return { globalOptions, filteredArgs, showHelp };
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const { globalOptions, filteredArgs } = parseGlobalArgs(args);
+  const { globalOptions, filteredArgs, showHelp: wantHelp } = parseGlobalArgs(args);
 
   // Initialize logger with global options
   logger.initLogger(globalOptions);
 
-  if (filteredArgs.length === 0 || filteredArgs[0] === 'help') {
+  if (wantHelp || filteredArgs.length === 0 || filteredArgs[0] === 'help') {
     showHelp();
     return;
   }
