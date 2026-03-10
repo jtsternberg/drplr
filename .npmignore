@@ -1,4 +1,12 @@
 .claude/
+.beads/
+.github/
+test/
+AGENTS.md
+CLAUDE.md
+ROADMAP.md
+TESTING.md
+Notes.md
 test.txt
 secret.txt
 *.log
