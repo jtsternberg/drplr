@@ -102,11 +102,22 @@ The most complex feature - private uploads require a two-step process:
 
 ```
 drplr/
-├── drplr.js              # Main CLI entry point
+├── drplr.js              # Main CLI entry point (exports globalFlagsMeta)
 ├── lib/
-│   ├── config.js         # XDG-compliant encrypted config
-│   ├── upload.js         # File upload and privacy logic  
-│   └── errors.js         # Custom error classes
+│   ├── arg-parser.js     # Shared argument parsing (exports commonOptionsMeta)
+│   ├── api-utils.js      # API error parsing and privacy handling
+│   ├── client.js         # Droplr SDK client creation
+│   ├── command-registry.js # Auto-discovers commands from lib/commands/*.js
+│   ├── command-utils.js  # Auth checks and error handling
+│   ├── config.js         # XDG-compliant config + 1Password resolution
+│   ├── errors.js         # Custom error classes
+│   ├── logger.js         # Logging with porcelain/debug modes
+│   └── commands/
+│       ├── auth.js       # Auth commands (token, login, 1password)
+│       ├── completions.js # Shell completion generation + install
+│       ├── link.js       # Link shortening
+│       ├── note.js       # Note/code snippet creation
+│       └── upload.js     # File uploads
 ├── package.json          # npm package configuration
 ├── README.md             # User documentation
 ├── .npmignore            # Exclude dev files from package
