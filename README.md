@@ -232,4 +232,11 @@ export PATH="$PATH:/path/to/drplr"
 2. Install dependencies: `npm install`
 3. Link globally: `npm link`
 
+**Or install directly from a cloned local directory:**
+```bash
+git clone https://github.com/jtsternberg/drplr.git
+npm install -g /path/to/drplr
+```
+Changes to the local files take effect immediately without reinstalling.
+
 
